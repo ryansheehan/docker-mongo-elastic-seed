@@ -1,0 +1,60 @@
+version: '2'
+services:
+  # container example for a server
+  server:
+    build: ./server
+    image: my-app-server
+    ports:
+      - "3030:3030"
+    volumes:
+      - ./server:/app
+      - ./logs/server:/logs
+    links:
+      - mongo
+      - elasticsearch
+
+  # mongo-connector-es is what reads data from mongo and stores it in elasticsearch
+  mongo-connector-es:
+    build:
+      context: ./mongo-connector-es
+    image: mongo-connector-es
+    links:
+      - mongo
+      - elasticsearch
+    volumes:
+      - ./logs/mongo-connector-es:/logs
+      
+  kibana:
+    build: 
+      context: ./kibana-sense
+    image: kibana-sense
+    ports:
+      - "5601:5601"
+    links:
+      - elasticsearch
+
+  elasticsearch:
+    image: elasticsearch:2.3.5
+
+  mongo-express:
+    image: mongo-express:0.31.0
+    ports:
+      - 8081:8081
+    links:
+      - mongo
+
+  mongo:
+    image: mongo:3.2.9    
+    volumes:
+      - ./logs/mongo:/logs
+
+    # this entrypoint executes three commands
+    # 1. Run mongod
+    #     - Specifies a log file location which is in the volume
+    #     - Specifies a replication set name
+    #     - forks the process to run mongod in the background
+    #
+    # 2. Run mongo --eval to initiate the replication service
+    #
+    # 3. To keep the container alive, tail the log file indefinitely
+    entrypoint: /bin/bash -c '/usr/bin/mongod --logpath /logs/mongo.log --fork --replSet rs && mongo --eval "rs.initiate()" && tail -f /logs/mongo.log'

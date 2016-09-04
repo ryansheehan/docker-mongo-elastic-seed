@@ -1,0 +1,13 @@
+{
+  "name": "server",
+  "version": "1.0.0",
+  "main": "server.js",
+  "scripts": {
+    "start": "nodemon server.js",
+    "nodemon": "nodemon"
+  },
+  "license": "ISC",
+  "devDependencies": {
+    "nodemon": "^1.10.2"
+  }
+}
