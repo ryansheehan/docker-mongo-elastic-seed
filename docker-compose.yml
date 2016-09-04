@@ -1,17 +1,17 @@
 version: '2'
 services:
   # container example for a server
-  server:
-    build: ./server
-    image: my-app-server
-    ports:
-      - "3030:3030"
-    volumes:
-      - ./server:/app
-      - ./logs/server:/logs
-    links:
-      - mongo
-      - elasticsearch
+  # server:
+  #   build: ./server
+  #   image: my-app-server
+  #   ports:
+  #     - "3030:3030"
+  #   volumes:
+  #     - ./server:/app
+  #     - ./logs/server:/logs
+  #   links:
+  #     - mongo
+  #     - elasticsearch
 
   # mongo-connector-es is what reads data from mongo and stores it in elasticsearch
   mongo-connector-es:
