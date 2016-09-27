@@ -47,6 +47,8 @@ services:
     image: mongo:3.2.9    
     volumes:
       - ./logs/mongo:/logs
+      # persist data
+      - ./data/db:/data/db
 
     # this entrypoint executes three commands
     # 1. Run mongod
@@ -57,4 +59,4 @@ services:
     # 2. Run mongo --eval to initiate the replication service
     #
     # 3. To keep the container alive, tail the log file indefinitely
-    entrypoint: /bin/bash -c '/usr/bin/mongod --logpath /logs/mongo.log --fork --replSet rs && mongo --eval "rs.initiate()" && tail -f /logs/mongo.log'
+    entrypoint: /bin/bash -c '/usr/bin/mongod --logpath /logs/mongo.log --fork --replSet rs && mongo --eval "var cfg={\"_id\":\"rs\",\"version\":1,\"members\":[{\"_id\":0,\"host\":\"localhost:27017\",\"priority\":2}]}; rs.initiate(cfg); rs.reconfig(cfg,{force:true});" && tail -f /logs/mongo.log'
